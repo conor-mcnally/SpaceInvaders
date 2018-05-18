@@ -54,6 +54,8 @@ bullet.hideturtle()
 
 bulletspeed = 20
 
+bulletstate = "ready"
+
 #"Move Left" function
 def move_left():
 	x = player.xcor()
@@ -72,6 +74,9 @@ def move_right():
 
 def fire_bullet():
 	global bulletstate
+	if bulletstate == "ready":
+		bulletstate = "fire"
+
 
 	#Move the bullet to just above the player
 	x = player.xcor()
@@ -107,9 +112,15 @@ while True:
 		enemy.sety(y)
 
 	#Move bullet
-	y = bullet.ycor()
-	y += bulletspeed
-	bullet.sety(y)
+	if bulletstate == "fire":
+		y = bullet.ycor()
+		y += bulletspeed
+		bullet.sety(y)
+
+	#Check if bullet hits border
+	if bullet.ycor() > 275:
+		bullet.hideturtle()
+		bulletstate = "ready"
 
 
 
