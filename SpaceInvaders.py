@@ -31,7 +31,7 @@ player.speed(0)
 player.setposition(0, -250)
 player.setheading(90)
 
-playerspeed = 30
+playerspeed = 15
 
 #Enemy Invader
 enemy = turtle.Turtle()
@@ -42,7 +42,17 @@ enemy.speed(0)
 enemy.setposition(-200, 250)
 enemyspeed = 2
 
+#Create enemy projectile
+bullet = turtle.Turtle()
+bullet.color("yellow")
+bullet.shape("triangle")
+bullet.penup()
+bullet.speed(0)
+bullet.setheading(90)
+bullet.shapesize(0.5, 0.5)
+bullet.hideturtle()
 
+bulletspeed = 20
 
 #"Move Left" function
 def move_left():
@@ -60,11 +70,21 @@ def move_right():
 		x = 280
 	player.setx(x)
 
+def fire_bullet():
+	global bulletstate
+
+	#Move the bullet to just above the player
+	x = player.xcor()
+	y = player.ycor() +10
+	bullet.setposition(x, y)
+	bullet.showturtle()
+
+
 #Keyboard Bindings
 turtle.listen()
 turtle.onkey(move_right, "Right")
 turtle.onkey(move_left, "Left")
-
+turtle.onkey(fire_bullet, "space")
 #Main Game Loop
 while True:
 	
@@ -86,6 +106,10 @@ while True:
 		enemyspeed *= -1
 		enemy.sety(y)
 
+	#Move bullet
+	y = bullet.ycor()
+	y += bulletspeed
+	bullet.sety(y)
 
 
 
