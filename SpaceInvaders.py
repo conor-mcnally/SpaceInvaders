@@ -2,6 +2,7 @@
 
 import turtle
 import os
+import math
 
 #Set up screen
 mainscreen = turtle.Screen()
@@ -79,10 +80,17 @@ def fire_bullet():
 
 
 	#Move the bullet to just above the player
-	x = player.xcor()
-	y = player.ycor() +10
-	bullet.setposition(x, y)
-	bullet.showturtle()
+		x = player.xcor()
+		y = player.ycor() +10
+		bullet.setposition(x, y)
+		bullet.showturtle()
+
+def isCollision(t1, t2):
+	distance = math.sqrt(math.pow(t1.xcor()-t2.xcor(),2)+math.pow(t1.ycor()-t2.ycor(),2))
+	if distance < 15:
+		return True
+	else:
+		return False
 
 
 #Keyboard Bindings
@@ -122,6 +130,18 @@ while True:
 		bullet.hideturtle()
 		bulletstate = "ready"
 
+	#Check for collision between bullet and enemy
+	if isCollision(bullet, enemy):
+		bullet.hideturtle()
+		bulletstate = "ready"
+		bullet.setposition(0, -400)
+		#Reset enemy
+		enemy.setposition(-200, 250)
 
+	if isCollision(player, enemy):
+		player.hideturtle()
+		enemy.hideturtle()
+		print("Game Over")
+		break
 
 delay = input("Press enter to finish.")
