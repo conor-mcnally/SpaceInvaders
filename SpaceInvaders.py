@@ -4,16 +4,22 @@ import turtle
 import os
 import math
 import random
+import winsound
 
 #Set up screen
 mainscreen = turtle.Screen()
-mainscreen.bgcolor("black")
+mainscreen.bgcolor("white")
 mainscreen.title("Space Invaders")
+mainscreen.bgpic("Background.gif")
+
+#Register the shapes
+turtle.register_shape("Invader.gif")
+turtle.register_shape("Player.gif")
 
 #Draw a border
 border_pen = turtle.Turtle()
 border_pen.speed(0)
-border_pen.color("white")
+border_pen.color("purple")
 border_pen.penup()
 border_pen.setposition(-300, -300)
 border_pen.pendown()
@@ -23,11 +29,23 @@ for side in range(4):
 	border_pen.lt(90)
 border_pen.hideturtle()
 
+#Set score to 0
+score = 0
+
+#Draw Score
+score_pen = turtle.Turtle()
+score_pen.speed(0)
+score_pen.color("white")
+score_pen.penup()
+score_pen.setposition(-290, 280)
+scorestring = "Score: %s" %score
+score_pen.write(scorestring, False, align="left", font=("Arial", 14, "normal"))
+score_pen.hideturtle()
 
 #Create player turtle
 player = turtle.Turtle()
 player.color("blue")
-player.shape("triangle")
+player.shape("Player.gif")
 player.penup()
 player.speed(0)
 player.setposition(0, -250)
@@ -47,9 +65,8 @@ for i in range(num_of_enemies):
 
 for enemy in enemies:
 	#Enemy Invader Properties
-	enemy = turtle.Turtle()
 	enemy.color("red")
-	enemy.shape("circle")
+	enemy.shape("Invader.gif")
 	enemy.penup()
 	enemy.speed(0)
 	x = random.randint(-200, 200)
@@ -91,6 +108,7 @@ def move_right():
 def fire_bullet():
 	global bulletstate
 	if bulletstate == "ready":
+		winsound.PlaySound('laser.wav', winsound.SND_FILENAME)
 		bulletstate = "fire"
 	#Move the bullet to just above the player
 		x = player.xcor()
@@ -125,26 +143,38 @@ while True:
 
 		#Move the enemy back and down
 		if enemy.xcor() > 280:
-			y = enemy.ycor()
-			y -= 40
+			#Moves all of the enemies down
+			for e in enemies:
+				y = e.ycor()
+				y -= 40
+				e.sety(y)
 			enemyspeed *= -1
-			enemy.sety(y)
 
 		if enemy.xcor() < -280:
-			y = enemy.ycor()
-			y -= 40
+			for e in enemies:
+				#Move all enemies down
+				y = e.ycor()
+				y -= 40
+				e.sety(y)
 			enemyspeed *= -1
-			enemy.sety(y)
 
 		#Check for collision between bullet and enemy
 		if isCollision(bullet, enemy):
+			winsound.PlaySound('explosion.wav', winsound.SND_FILENAME)
 			bullet.hideturtle()
 			bulletstate = "ready"
 			bullet.setposition(0, -400)
+			#Reset the enemy
 			x = random.randint(-200, 200)
 			y = random.randint(100, 250)
 			enemy.setposition(x, y)
+			#Update the score
+			score += 10
+			scorestring = "Score: %s" %score
+			score_pen.clear()
+			score_pen.write(scorestring, False, align="left", font=("Arial", 14, "normal"))
 
+		#Check for collision between player and enemy
 		if isCollision(player, enemy):
 			player.hideturtle()
 			enemy.hideturtle()
@@ -161,7 +191,5 @@ while True:
 	if bullet.ycor() > 275:
 		bullet.hideturtle()
 		bulletstate = "ready"
-
-
 
 delay = input("Press enter to finish.")
